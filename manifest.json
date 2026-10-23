@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "MX YouTube Clean",
+  "short_name": "MX YouTube",
+  "description": "Open the real YouTube site with ad request filters and automatic video ad skipping. No account access or tracking.",
+  "version": "1.0.0",
+  "minimum_chrome_version": "111",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "MX YouTube Clean",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png"
+    }
+  },
+  "permissions": ["declarativeNetRequest", "tabs", "storage"],
+  "host_permissions": ["*://*.youtube.com/*"],
+  "background": {"service_worker": "background.js"},
+  "declarative_net_request": {
+    "rule_resources": [{"id": "ad_domains", "enabled": true, "path": "ad_rules.json"}]
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://youtube.com/*", "*://www.youtube.com/*", "*://m.youtube.com/*"],
+      "js": ["player-patch.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": ["*://youtube.com/*", "*://www.youtube.com/*", "*://m.youtube.com/*"],
+      "js": ["clean.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "options_page": "home.html"
+}
