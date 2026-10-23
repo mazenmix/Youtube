@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#080b13">
+  <meta name="description" content="MXTube — افتح يوتيوب الأصلي، ابحث عن الفيديوهات، واستخدم إضافة MX YouTube Clean على كمبيوترك.">
+  <title>MXTube — YouTube by MazenmiX</title>
+  <style>
+    :root { color-scheme: dark; --bg:#080b13; --text:#f7f8ff; --dim:#a9b5ce; --line:#2d3952; --card:#13192b; --purple:#9979ff; }
+    * { box-sizing: border-box; }
+    html { min-height: 100%; background:var(--bg); }
+    body { margin:0; min-height:100dvh; padding:0; background:radial-gradient(ellipse 100% 65% at 50% -17%,#26204d 0,transparent 69%),radial-gradient(ellipse at 85% 95%,#250d2b 0,transparent 45%),#080b13; color:var(--text); font:15px/1.65 system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Tahoma,Arial,sans-serif; }
+    .shell { width:min(620px,calc(100% - 38px)); margin:auto; padding:38px 0 max(52px,env(safe-area-inset-bottom)); }
+    header { display:flex; align-items:center; gap:12px; padding:0 0 38px; }
+    .logo { width:53px; height:53px; display:grid; place-items:center; flex:none; border-radius:17px; background:linear-gradient(135deg,#f84d65,#883cff); box-shadow:0 12px 29px #773cff45; }
+    .logo svg { width:30px; height:30px; }
+    .brand { font-size:24px; font-weight:850; letter-spacing:-.6px; line-height:1.2; }
+    .sub { font-size:11px; font-weight:750; letter-spacing:1.3px; color:#a6b6d4; margin-top:3px; }
+    .kicker { display:inline-flex; align-items:center; gap:9px; font-size:11px; letter-spacing:2px; color:#b7a6ff; font-weight:850; direction:ltr; }
+    .kicker:before { content:''; width:7px;height:7px; border-radius:50%; background:#48db9c; box-shadow:0 0 0 4px #48db9c23; }
+    h1 { font-size:clamp(32px,7.4vw,48px); font-weight:850; line-height:1.22; letter-spacing:-.8px; margin:15px 0; }
+    h1 span { color:#ae9bff; }
+    .lead { max-width:520px; color:var(--dim); font-size:15px; line-height:1.85; margin:0 0 25px; }
+    .panel { border:1px solid var(--line); border-radius:22px; padding:19px; background:#13192bd9; box-shadow:0 17px 60px #0004; }
+    form { display:flex; gap:10px; flex-wrap:wrap; }
+    input { min-width:0; flex:1 1 220px; border:1px solid #3a4966; border-radius:13px; background:#0a1020; font:inherit; padding:14px 15px; color:#fff; outline:none; direction:auto; }
+    input:focus { border-color:#a892ff; box-shadow:0 0 0 3px #9e88ff2e; }
+    input::placeholder {color:#8895b1;}
+    button, .btn { font:inherit; text-decoration:none; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:9px; border:0; border-radius:13px; font-weight:750; padding:13px 18px; }
+    .primary { color:white; background:linear-gradient(110deg,#7859f6,#b35afa); }
+    .primary:hover {filter:brightness(1.1);}
+    .open { display:flex; align-items:center; justify-content:center; width:100%; font-size:16px; margin:17px 0; padding:16px; background:linear-gradient(120deg,#f14568,#a448ec); color:white; box-shadow:0 10px 22px #a5326a27; }
+    .shortcut-row { display:flex; flex-wrap:wrap; gap:9px; margin-top:14px; }
+    .shortcut { color:#e7ebff; background:#1b2540; border:1px solid #344260; text-decoration:none; border-radius:11px; padding:9px 14px; font-weight:700; font-size:13px; transition:background .18s; }
+    .shortcut:hover {background:#2a3654;}
+    .warning { color:#f8a7aa; min-height:0; font-size:12px; padding:0 2px; }
+    .feature { margin-top:25px; border:1px solid #333351; background:#17182a91; border-radius:19px; padding:18px 19px; }
+    .feature-label { font-size:13px; font-weight:800; margin:0 0 7px; color:#ebdcff; }
+    .feature p { font-size:13px; color:#abb6cf; line-height:1.8; margin:0; }
+    .feature a { display:inline-block; margin-top:12px; text-decoration:none; color:#d5c5ff; font-size:13px; font-weight:800; }
+    footer { font-size:11px; text-align:center; color:#8190ae; margin:32px 0 0; line-height:1.8; }
+    @media(max-width:480px) {
+      .shell {padding-top:26px;}
+      header {padding-bottom:34px;}
+      .panel {padding:15px;}
+      .primary {width:100%;}
+      input { width:100%; flex-basis:100%; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none">
+          <path d="M27.3 9.4c-.3-1.1-1.2-2-2.3-2.3C23.2 6.6 16 6.6 16 6.6s-7.2 0-9 .5c-1.1.3-2 1.2-2.3 2.3-.5 1.8-.5 6.6-.5 6.6s0 4.8.5 6.6c.3 1.1 1.2 2 2.3 2.3 1.8.5 9 .5 9 .5s7.2 0 9-.5c1.1-.3 2-1.2 2.3-2.3.5-1.8.5-6.6.5-6.6s0-4.8-.5-6.6Z" fill="#fff"/>
+          <path d="m13 11.7 8 4.3-8 4.3v-8.6Z" fill="#9D43EE"/>
+        </svg>
+      </div>
+      <div><div class="brand" dir="ltr">MXTube</div><div class="sub" dir="ltr">BY MAZENMIX</div></div>
+    </header>
+    <div class="kicker">MX YOUTUBE · WEB</div>
+    <h1>يوتيوب مثل ما تحبه.<br><span>واجهة سريعة ونظيفة.</span></h1>
+    <p class="lead">افتح موقع يوتيوب الأصلي، ابحث عن الأغاني والفيديوهات، أو الصگ رابط فيديو وافتحه مباشرة.</p>
+    <section class="panel" aria-label="فتح فيديوهات يوتيوب">
+      <form id="search-form" action="https://www.youtube.com/results" method="get" target="_blank" rel="noopener noreferrer">
+        <input id="search" type="text" name="search_query" placeholder="ابحث أو الصگ رابط يوتيوب" autocomplete="off" aria-label="بحث عن فيديو أو رابط يوتيوب" required>
+        <button class="primary" type="submit">بحث / فتح ↗</button>
+      </form>
+      <p id="message" class="warning" role="status" aria-live="polite"></p>
+      <a class="btn open" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer">▶ &nbsp;افتح YouTube الأصلي</a>
+      <div class="shortcut-row">
+        <a class="shortcut" href="https://www.youtube.com/feed/subscriptions" target="_blank" rel="noopener noreferrer">الاشتراكات</a>
+        <a class="shortcut" href="https://www.youtube.com/feed/playlists" target="_blank" rel="noopener noreferrer">قوائمي</a>
+        <a class="shortcut" href="https://www.youtube.com/shorts" target="_blank" rel="noopener noreferrer">Shorts</a>
+        <a class="shortcut" href="https://music.youtube.com/" target="_blank" rel="noopener noreferrer">YouTube Music</a>
+      </div>
+    </section>
+    <section class="feature">
+      <div class="feature-label">إضافة MX YouTube Clean للكمبيوتر</div>
+      <p>نسخة Chrome على الكمبيوتر تحاول حجب إعلانات يوتيوب. أمّا موقع MXTube على الآيفون فيفتح يوتيوب فقط؛ موقع ويب عادي ما عنده صلاحية يحجب إعلانات يوتيوب داخل تطبيق أو تبويب ثاني.</p>
+      <a href="https://github.com/mazenmix/Youtube" target="_blank" rel="noopener noreferrer">ملفات الإضافة وتعليمات التثبيت ↗</a>
+    </section>
+    <footer>MXTube · MazenmiX<br>بدون تسجيل دخول للموقع · بدون تخزين سجل البحث</footer>
+  </main>
+  <script>
+    (() => {
+      'use strict';
+      const form = document.getElementById('search-form');
+      const input = document.getElementById('search');
+      const message = document.getElementById('message');
+      const allowed = new Set(['youtube.com','www.youtube.com','m.youtube.com','music.youtube.com']);
+      form.addEventListener('submit', event => {
+        const text = input.value.trim();
+        message.textContent = '';
+        if (!text) { event.preventDefault(); return; }
+        if (!/^https?:\/\//i.test(text) && !/^youtu\.be\//i.test(text) &&
+            !/^(www\.)?(m\.)?youtube\.com\//i.test(text)) return;
+        event.preventDefault();
+        let candidate = text;
+        if (!/^https?:\/\//i.test(candidate)) candidate = 'https://' + candidate;
+        try {
+          const url = new URL(candidate);
+          const host = url.hostname.toLowerCase();
+          if (!['https:','http:'].includes(url.protocol)) throw new Error('protocol');
+          if (host === 'youtu.be') {
+            const id = url.pathname.split('/').filter(Boolean)[0] || '';
+            if (!/^[A-Za-z0-9_-]{11}$/.test(id)) throw new Error('video');
+            candidate = 'https://www.youtube.com/watch?v=' + encodeURIComponent(id);
+          } else if (allowed.has(host)) {
+            candidate = 'https://' + host + url.pathname + url.search + url.hash;
+          } else throw new Error('host');
+          window.open(candidate,'_blank','noopener,noreferrer');
+        } catch (_) {
+          message.textContent = 'هذا مو رابط يوتيوب صحيح. الصگ رابط يوتيوب أو اكتب اسم الفيديو.';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
