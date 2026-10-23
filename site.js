@@ -7,7 +7,7 @@
     video:$('video-player'), iframe:$('iframe-player'), holder:$('player-placeholder'),
     player:$('player-card'), prompt:$('placeholder-title'), hint:$('placeholder-hint'),
     spinner:$('spinner'), title:$('video-title'), author:$('video-author'),
-    quality:$('quality'), retry:$('retry'), alternate:$('alternate'), save:$('save'), share:$('share'),
+    quality:$('quality'), retry:$('retry'), alternate:$('alternate'), direct:$('direct'), save:$('save'), share:$('share'),
     toast:$('toast'), tabs:[...document.querySelectorAll('[data-mode]')]
   };
   const state = {seq:0, mode:'trending',current:null,video:null,sourceIndex:0,results:[],usingIframe:false,toastTimer:0};
@@ -112,7 +112,7 @@
   }
   function resetControls() {
     el.quality.hidden=true;el.quality.innerHTML='';
-    el.retry.hidden=false;el.alternate.hidden=true;
+    el.retry.hidden=false;el.alternate.hidden=true;el.direct.hidden=false;el.direct.textContent='▶ يوتيوب مباشر';
     el.title.textContent='جاري التحميل...';el.author.textContent='';
     el.save.hidden=false;el.share.hidden=false;
   }
@@ -129,6 +129,7 @@
     }
     const src=info.sources[index];
     state.sourceIndex=index;state.usingIframe=false;
+    el.direct.textContent='▶ يوتيوب مباشر';
     el.quality.value=String(index);
     revealVideo();
     el.video.pause();
@@ -153,7 +154,27 @@
     el.iframe.src=safe?fallback:'https://inv.nadeko.net/embed/'+id+'?local=true';
     el.alternate.hidden=false;el.alternate.textContent='بدّل السيرفر';
     notify('جرّب المشغّل البديل داخل MXTube');
+    el.direct.textContent='▶ يوتيوب مباشر';
   }
+  function showDirect() {
+    const id=state.current;
+    if (!id || !/^[A-Za-z0-9_-]{11}$/.test(id)) return;
+    state.usingIframe=true;
+    el.video.pause();el.video.removeAttribute('src');el.video.load();
+    el.video.hidden=true;el.video.style.display='none';
+    el.holder.hidden=true;
+    el.iframe.hidden=false;el.iframe.style.display='block';
+    el.iframe.src='https://www.youtube-nocookie.com/embed/'+encodeURIComponent(id)+'?autoplay=1&playsinline=1&rel=0';
+    el.direct.textContent='◀ الرجوع للوضع النظيف';
+    notify('تشغيل YouTube داخل MXTube · قد تظهر إعلانات');
+  }
+  el.direct.addEventListener('click',()=>{
+    if (!state.current) return;
+    if (state.usingIframe && el.iframe.src.includes('youtube-nocookie.com')) {
+      if (state.video?.sources?.length) applySource(state.sourceIndex,true);
+      else play(state.current,false,null,true);
+    } else showDirect();
+  });
   async function play(id,writeHistory=true,fromItem=null,refresh=false) {
     if(!/^[A-Za-z0-9_-]{11}$/.test(id))return;
     const seq=++state.seq;
@@ -191,7 +212,15 @@
       if(seq!==state.seq)return;
       state.video={embed:'https://inv.nadeko.net/embed/'+id+'?local=true',sources:[]};
       el.title.textContent=el.title.textContent==='جاري التحميل...'?'تعذر الوصول للفيديو':el.title.textContent;
-      showAlternative();
+      el.holder.hidden=false;
+      el.prompt.textContent='المصدر النظيف غير متاح حالياً';
+      el.hint.textContent='تكدر تجرّب يوتيوب مباشر داخل MXTube، لكن قد تظهر إعلانات.';
+      el.spinner.hidden=true;
+      el.video.hidden=true;el.video.style.display='none';
+      el.iframe.hidden=true;el.iframe.style.display='none';
+      el.alternate.hidden=false;
+      el.alternate.textContent='مشغّل بديل';
+      el.direct.textContent='▶ يوتيوب مباشر';
     }
   }
   el.video.addEventListener('error',()=>{
