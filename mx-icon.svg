@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="MXTube">
+  <defs><linearGradient id="a" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#f94a71"/><stop offset="1" stop-color="#773cff"/></linearGradient></defs>
+  <rect width="512" height="512" rx="112" fill="#090d19"/>
+  <rect x="50" y="90" width="412" height="332" rx="106" fill="url(#a)"/>
+  <path d="M213 176 356 256 213 336Z" fill="#fff"/>
+</svg>
