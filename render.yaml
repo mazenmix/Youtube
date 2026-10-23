@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: mxtube-stream
+    runtime: docker
+    rootDir: backend
+    dockerfilePath: ./backend/Dockerfile
+    region: singapore
+    healthCheckPath: /health
+    envVars:
+      - key: MX_STREAM_SECRET
+        generateValue: true
