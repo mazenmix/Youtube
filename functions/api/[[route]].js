@@ -1,5 +1,4 @@
-// MXTube public video metadata gateway.
-// The browser plays third-party video URLs inside its own native player; this Function never proxies video bytes.
+// MXTube Pages gateway. Self-hosted secure yt-dlp extraction and same-origin media stream when configured; legacy public provider fallback otherwise.
 const INV = [
   'https://inv.nadeko.net',
   'https://invidious.tiekoetter.com',
@@ -159,6 +158,83 @@ async function video(id) {
   ];
   return await firstUsable(jobs);
 }
+
+// Self-hosted yt-dlp backend is opt-in: no secret or backend URL is bundled
+// into client JavaScript. Pages keeps the secret in context.env.
+function ownBackend(context) {
+  const value=context.env?.MX_STREAM_BACKEND_URL;
+  const secret=context.env?.MX_STREAM_SECRET;
+  if (!value || !secret || secret.length<24) return null;
+  try {
+    const parsed = new URL(value);
+    if (parsed.protocol !== 'https:' || parsed.username || parsed.password ||
+        parsed.port || parsed.hostname === 'localhost' || parsed.hostname.endsWith('.local'))
+      return null;
+    return {base:parsed.origin,secret};
+  } catch {return null;}
+}
+async function ownVideo(context,id) {
+  const backend=ownBackend(context);
+  if (!backend) return null;
+  const ctrl=new AbortController();
+  const timer=setTimeout(()=>ctrl.abort(),29000);
+  try {
+    const res=await fetch(backend.base+'/api/video?id='+encodeURIComponent(id),{
+      headers:{'x-mxtube-key':backend.secret,accept:'application/json'},
+      signal:ctrl.signal
+    });
+    if(!res.ok) return json({error:'The standalone MXTube stream server could not extract this video.'},503);
+    const data=await res.json();
+    if(data.id!==id || !Array.isArray(data.sources)) return json({error:'Invalid backend response.'},502);
+    const safe=data.sources.filter(x=>{
+      const parts=String(x.url||'').match(/^\/api\/stream\/([A-Za-z0-9_-]{11})\/([A-Za-z0-9_.-]{1,72})$/);
+      return parts && parts[1]===id && ['video/mp4','video/webm'].includes(x.type);
+    }).slice(0,8).map(x=>({
+      url:x.url,type:x.type,quality:Number(x.quality)||0,label:clean(x.label,24),origin:'MXTube'
+    }));
+    if(!safe.length) return json({error:'No playable streams available.'},503);
+    return json({
+      id,title:clean(data.title,240),author:clean(data.author,100),
+      duration:Number(data.duration)||0,
+      thumbnail:'https://i.ytimg.com/vi/'+id+'/hqdefault.jpg',
+      sources:safe,source:'MXTube'
+    },200,25);
+  } catch {
+    return json({error:'Standalone stream server unavailable.'},503);
+  } finally {clearTimeout(timer);}
+}
+async function ownStream(context, route) {
+  const backend=ownBackend(context);
+  if(!backend) return json({error:'MXTube streaming backend not configured.'},503);
+  if(!/^\/api\/stream\/[A-Za-z0-9_-]{11}\/[A-Za-z0-9_.-]{1,72}$/.test(route))
+    return json({error:'Invalid stream URL'},400);
+  const headers={'x-mxtube-key':backend.secret};
+  const range=context.request.headers.get('range');
+  if(range) {
+    if(!/^bytes=\d{0,16}-\d{0,16}$/.test(range)) return json({error:'Invalid byte range'},416);
+    headers.range=range;
+  }
+  try {
+    const upstream=await fetch(backend.base+route,{
+      method:context.request.method==='HEAD'?'HEAD':'GET', headers,
+      redirect:'manual'
+    });
+    if(upstream.status!==200 && upstream.status!==206)
+      return json({error:'MXTube video stream not available.'},502);
+    const safeHeaders=new Headers({
+      'cache-control':'private, no-store',
+      'x-content-type-options':'nosniff',
+    });
+    for (const key of ['content-type','content-length','content-range','accept-ranges']) {
+      const value=upstream.headers.get(key);
+      if(value)safeHeaders.set(key,value);
+    }
+    return new Response(context.request.method==='HEAD'?null:upstream.body,{
+      status:upstream.status,headers:safeHeaders
+    });
+  } catch {return json({error:'MXTube stream connection failed.'},503);}
+}
+
 export async function onRequestGet(context) {
   const url = new URL(context.request.url);
   const route = url.pathname.replace(/\/+$/,'');
@@ -173,9 +249,15 @@ export async function onRequestGet(context) {
       const items=await trending();
       return json({items},200,360);
     }
+    if (route.startsWith('/api/stream/')) return ownStream(context,route);
+    if (route === '/api/status') {
+      return json({backend:ownBackend(context)?'selfhosted':'unconfigured',
+        mode:ownBackend(context)?'own':'public-fallback'},200,15);
+    }
     if (route === '/api/video') {
       const id=clean(url.searchParams.get('id'),12);
       if (!idOk(id)) return json({error:'Invalid YouTube video ID.'},400);
+      if(ownBackend(context)) return await ownVideo(context,id);
       const videoData=await video(id);
       return json(videoData,200,90);
     }
