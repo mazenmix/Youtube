@@ -201,8 +201,15 @@
       if(seq!==state.seq)return;
       if (state.usingIframe && el.iframe.src.includes('youtube-nocookie.com')) return;
       const sources=Array.isArray(video.sources)?video.sources.filter(s=>{
-        try{return new URL(s.url).protocol==='https:';}catch{return false;}
-      }):[];
+        try {
+          const target=new URL(s.url,location.origin);
+          const internal=target.origin===location.origin &&
+            /^\/api\/stream\/[A-Za-z0-9_-]{11}\/[A-Za-z0-9_.-]{1,72}$/.test(target.pathname);
+          const external=target.protocol==='https:' &&
+            target.origin!==location.origin;
+          return internal || external;
+        } catch {return false;}
+      }).map(s=>({...s,url:new URL(s.url,location.origin).toString()})):[];
       if(!sources.length) throw new Error('no playback sources');
       state.video={...video,sources};
       el.title.textContent=video.title||el.title.textContent;
