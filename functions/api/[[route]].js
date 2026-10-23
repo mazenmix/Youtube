@@ -7,9 +7,10 @@ const INV = [
   'https://yt.chocolatemoo53.com'
 ];
 const PIPED = [
-  'https://pipedapi.kavin.rocks',
-  'https://pipedapi.leptons.xyz',
-  'https://pipedapi.nosebs.ru'
+  'https://pipedapi.ducks.party',
+  'https://api.piped.private.coffee',
+  'https://pipedapi.adminforge.de',
+  'https://pipedapi.kavin.rocks'
 ];
 const clean = (v, n=180) => String(v ?? '').replace(/[\x00-\x1f\x7f]/g, ' ').trim().slice(0, n);
 const idOk = id => /^[a-zA-Z0-9_-]{11}$/.test(id);
