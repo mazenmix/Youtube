@@ -79,11 +79,18 @@ async function search(q) {
   return await firstUsable(jobs);
 }
 async function trending() {
-  const jobs=INV.map(host=>async()=>{
-    const data = await readJson(host+'/api/v1/trending?region=US');
-    const items=itemsFrom(data);
-    return items.length ? items : null;
-  });
+  const jobs=[
+    ...INV.map(host=>async()=>{
+      const data = await readJson(host+'/api/v1/trending?region=US');
+      const items=itemsFrom(data);
+      return items.length ? items : null;
+    }),
+    ...PIPED.map(host=>async()=>{
+      const data=await readJson(host+'/trending?region=US');
+      const items=itemsFrom(data,true);
+      return items.length ? items : null;
+    })
+  ];
   return await firstUsable(jobs);
 }
 const qNum = q => {
