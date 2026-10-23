@@ -1,0 +1,24 @@
+name: MXTube backend checks
+on:
+  push:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-check.yml'
+      - '_routes.json'
+      - 'render.yaml'
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check Python compilation
+        run: python -m compileall -q backend
+      - name: Validate gateway routes and Pages configuration
+        run: |
+          python -m json.tool _routes.json > /dev/null
+          test -f backend/Dockerfile
+          test -f backend/requirements.txt
