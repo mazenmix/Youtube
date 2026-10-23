@@ -266,3 +266,6 @@ export async function onRequestGet(context) {
     return json({error:'Playback sources are temporarily unavailable. Try another video or retry.'},503);
   }
 }
+
+// Support media sniffing requests from Safari / Chrome.
+export const onRequestHead = onRequestGet;
