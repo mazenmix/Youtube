@@ -189,6 +189,7 @@
     try {
       const video=await api('/api/video?id='+encodeURIComponent(id)+(refresh?'&refresh='+Date.now():''));
       if(seq!==state.seq)return;
+      if (state.usingIframe && el.iframe.src.includes('youtube-nocookie.com')) return;
       const sources=Array.isArray(video.sources)?video.sources.filter(s=>{
         try{return new URL(s.url).protocol==='https:';}catch{return false;}
       }):[];
@@ -210,6 +211,7 @@
       applySource(preferred>=0?preferred:0,true);
     } catch {
       if(seq!==state.seq)return;
+      if (state.usingIframe && el.iframe.src.includes('youtube-nocookie.com')) return;
       state.video={embed:'https://inv.nadeko.net/embed/'+id+'?local=true',sources:[]};
       el.title.textContent=el.title.textContent==='جاري التحميل...'?'تعذر الوصول للفيديو':el.title.textContent;
       el.holder.hidden=false;
