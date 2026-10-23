@@ -48,7 +48,7 @@ def extract_sync(vid):
     opts = {
         "quiet": True, "no_warnings": True, "noplaylist": True,
         "skip_download": True, "socket_timeout": 13, "retries": 1,
-        "extractor_args":{"youtube":{"player_client":["web_safari","web_embedded"]}},
+        "extractor_args":{"youtube":{"player_client":["android_vr","web_safari","web_embedded"]}},
     }
     with yt_dlp.YoutubeDL(opts) as ydl:
         item = ydl.extract_info("https://www.youtube.com/watch?v="+vid, download=False)
