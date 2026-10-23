@@ -10,7 +10,7 @@
     quality:$('quality'), retry:$('retry'), alternate:$('alternate'), direct:$('direct'), save:$('save'), share:$('share'),
     toast:$('toast'), tabs:[...document.querySelectorAll('[data-mode]')]
   };
-  const state = {seq:0, mode:'trending',current:null,video:null,sourceIndex:0,results:[],usingIframe:false,toastTimer:0};
+  const state = {seq:0, mode:'trending',current:null,video:null,sourceIndex:0,results:[],usingIframe:false,ownBackend:false,toastTimer:0};
   function notify(message) {
     el.toast.textContent = message;
     el.toast.classList.add('on');
@@ -142,6 +142,16 @@
   function showAlternative() {
     const id=state.current;
     if(!id)return;
+    if(state.ownBackend){
+      el.video.pause();el.video.hidden=true;el.video.style.display='none';
+      el.iframe.hidden=true;el.iframe.style.display='none';
+      el.holder.hidden=false;
+      el.spinner.hidden=true;
+      el.prompt.textContent='المشغّل الداخلي ما گدر يشغّل هذا الفيديو';
+      el.hint.textContent='جرّب إعادة التحميل، أو يوتيوب مباشر (ممكن يحتوي إعلانات).';
+      el.alternate.hidden=true;
+      return;
+    }
     state.usingIframe=true;
     el.video.pause();el.video.removeAttribute('src');el.video.load();
     el.video.hidden=true;el.video.style.display='none';
@@ -220,7 +230,7 @@
       el.spinner.hidden=true;
       el.video.hidden=true;el.video.style.display='none';
       el.iframe.hidden=true;el.iframe.style.display='none';
-      el.alternate.hidden=false;
+      el.alternate.hidden=state.ownBackend;
       el.alternate.textContent='مشغّل بديل';
       el.direct.textContent='▶ يوتيوب مباشر';
     }
@@ -308,7 +318,18 @@
     else if(url.searchParams.has('q')){el.input.value=url.searchParams.get('q');feed('search',el.input.value,false);}
     else feed('trending','',false);
   });
-  (()=>{
+  async function checkBackend() {
+    try {
+      const response=await fetch('/api/status',{cache:'no-store'});
+      if(!response.ok) return;
+      const status=await response.json();
+      state.ownBackend=status.backend==='selfhosted';
+      const label=$('backend-status');
+      if(label) label.textContent=state.ownBackend?'خادم MXTube الخاص مفعّل':'المشغّل الخاص يحتاج ربط Backend';
+    }catch{}
+  }
+  (async ()=>{
+    await checkBackend();
     const url=new URL(location.href);
     const id=url.searchParams.get('v');
     if(id&&/^[A-Za-z0-9_-]{11}$/.test(id)){play(id,false);feed('trending','',false);}
